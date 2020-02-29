@@ -20,21 +20,54 @@
 
 
 #include <iostream>
-#include <cstdio>
+#include <limits>
+#include <string>
 using namespace std;
 
 
 
 /* =================   		Funciones		   ===============================
  */
-
-bool validarDatos()
+bool confirmar(string msj)
 {
-	
-	return true;
+	char check;
+	cout << msj << "? (S/N): ";
+		//cin.ignore(10000,'\n');
+		while (check != 's' || check != 'S' || check != 'n' || check != 'N')
+		{
+			cin >> skipws >> check;
+			cin.ignore(10000,'\n');
+			if (check == 's' || check == 'S')
+			{
+				return true;
+			}		
+			else if (check == 'n' || check == 'N') {break;}
+			
+			else cout << "> ";
+		}
+	return false;
+}
+
+int validarDatos()
+{
+	int n;
+	cin >> skipws >> n;
+	//cin.ignore(10000,'\n');
+	//~ //while (!validarDatos())			Usar funcion de validacion
+	while (cin.fail() || n < 0)
+	{
+		cin.clear();
+		cin.ignore(std::numeric_limits<int>::max(),'\n');
+		cout << " Entrada Invalida " << endl;
+		if (n < 0){ cout << "Solo se permiten numeros enteros positivos" << endl;}
+		cout << "Ingrese de nuevo: "
+		;
+		cin >> n;
+	}
+	return n;
 };
 
-/* ==================  		Ordenamientos 		============
+/* 				====  		Ordenamientos 		============
  * 
  * Utilizan algoritmo de Ordenamiento Shell
  */
@@ -98,7 +131,7 @@ void ordenDesc(int ar[], int n)
 	return;
 }
 
-/*===================   	Visualizaciones		 =========
+/*				====   	Visualizaciones		 =========
  */
 
 void visualizaPrecios(int ar[], int n) 			// Visualiza lista de precios
@@ -125,40 +158,33 @@ void verDescendente(int ar[], int n) 			// Visualiza lista de precios
 
 void ingresoDatos(int nprecios = 16)
 {
-	char aux2;
+	
 	int n = nprecios;
 	int i;
 	int precios[n];
-	cout << "\nCantidad de precios a ingresar [ " << n << " ]\n\nIntroduzca S para modificar o Enter para continuar..." << endl << "> ";
+	cout << "\nCantidad de precios a ingresar [ " << n << " ]"<< endl;
 	
-	cin >> noskipws >> aux2;
-	cin.ignore(10000,'\n');
+	//~ cin>> noskipws >> aux2;
+	//~ cin.ignore(std::numeric_limits<int>::max(), '\n');
 
 	
-	if (aux2 == 's' || aux2 == 'S')
+	if (confirmar("Cambiar cantidad"))
 	{
-		
-		cout << "Cantidad de meses a ingresar: ";
-		cin >> skipws >> n;
-		cin.ignore(10000,'\n');
-		//~ //while (!validarDatos())			Usar funcion de validacion
-		while (cin.fail())
+		cout << "\nCantidad de meses a ingresar: ";
+		n = validarDatos();
+		while (n == 0)
 		{
-			cin.clear();
-			cin.ignore(10000,'\n');
-			cout << " Entrada Invalida " << endl;
-			cout << "Ingrese de nuevo: "
-			;
-			cin >> n;
-		}
+			cout << "Cantidad debe ser un numero entero mayor a cero\n> ";
+			n = validarDatos();
+		}	
 		
 	}
 	
-	cout << "Ingrese los ultimos " << n << " precios, separados por un espacio:\n [ ";
+	cout << "\nIngrese los ultimos " << n << " precios, separados por un espacio:\n [ ";
 	
 	for (i = 0; i<n ; i++)
 	{
-		cin >> skipws >> precios[i];
+		precios[i] = validarDatos();
 		if (i == n-1)
 			{ 
 			cout << " ]" << endl;
@@ -167,15 +193,11 @@ void ingresoDatos(int nprecios = 16)
 			
 	}
 		
-	cout << "Usted ingresó: ";
+	cout << "\nUsted ingresó: ";
 	visualizaPrecios(precios, n);
 	
-	//char aux;
-	cout << "Modificar? (S/N): ";
-	//cin.ignore(10000,'\n');
-	cin >> noskipws >> aux2;
-	cin.ignore(10000,'\n');
-	if (aux2 == 's' || aux2 == 'S')
+
+	if (confirmar("Modificar"))
 	{
 		ingresoDatos(n);
 	}
@@ -186,19 +208,10 @@ void ingresoDatos(int nprecios = 16)
 		verAscendente(precios, n);
 		cout << " =========== Orden DESCENDENTE ========== " << endl;
 		verDescendente(precios, n);
+		cout << " =========== Orden Final del Arreglo ========== " << endl;
 		visualizaPrecios(precios, n);
 	}
 }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -213,25 +226,16 @@ void ingresoDatos(int nprecios = 16)
 int main()
 {
 	
-	while (true)
+	while (true)		// Menu del programa
 	{
-		char aux;
+		
 		cout << " ============================================\n\t\tBIENVENIDO\n";
 		
 		ingresoDatos();
 		
+	
+		if (confirmar("Salir")) {break;}		// Salida del programa
 
-		
-		/* Salida del programa
-		 * */
-		cout << "Salir? (S/N): ";
-		//cin.ignore(10000,'\n');
-		cin >> skipws >> aux;
-		cin.ignore(10000,'\n');
-		if (aux == 's' || aux == 'S')
-		{
-			break;
-		}		
 		
 		
 	}
