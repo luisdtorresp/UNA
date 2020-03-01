@@ -1,5 +1,5 @@
 /*
- * Trabajo Practico COmputacion II 324 2019-2
+ * Trabajo Practico Computacion II (324) 2019-2 Universidad Nacional Abierta - Venezuela
  * 
  * Copyright 2020 Programado por Luis Torres <luisdtorresp@gmail.com>
  * 
@@ -43,10 +43,11 @@ bool confirmar(string msj)
 			}		
 			else if (check == 'n' || check == 'N') {break;}
 			
-			else cout << "> ";
+			else cout << "Introduzca S ó N > ";
 		}
 	return false;
 }
+
 
 int validarDatos()
 {
@@ -60,8 +61,7 @@ int validarDatos()
 		cin.ignore(std::numeric_limits<int>::max(),'\n');
 		cout << " Entrada Invalida " << endl;
 		if (n < 0){ cout << "Solo se permiten numeros enteros positivos" << endl;}
-		cout << "Ingrese de nuevo: "
-		;
+		cout << "Ingrese de nuevo: ";
 		cin >> n;
 	}
 	return n;
@@ -79,8 +79,10 @@ void intercambiar(int& x, int& y)		// Funcion auxiliar para el ordenamiento
 	y = aux3;
 }
 
-void ordenAsc(int ar[], int n)
+void ordenAlgShell(int ar[], int n, char orden = 'a')
 {
+	
+	
 	int salto, i, j, k;
 	salto = n / 2;
 	while (salto > 0)
@@ -91,7 +93,9 @@ void ordenAsc(int ar[], int n)
 			while (j >= 0)
 			{
 				k = j + salto;
-				if (ar[j] <= ar[k])
+				
+				// Orden Ascedente o Descente segun sea elegido
+				if (((orden == 'a' || orden == 'A') && ar[j] <= ar[k]) || ((orden == 'd' || orden == 'D' )&& ar[j] >= ar[k]))
 					{j = -1;}			 // par de elementos ordenado
 				else
 				{
@@ -105,64 +109,64 @@ void ordenAsc(int ar[], int n)
 	return;
 }
 
-void ordenDesc(int ar[], int n)
-{
-	int salto, i, j, k;
-	salto = n / 2;
-	while (salto > 0)
-	{
-		for (i = salto; i < n; i++)
-		{
-			j = i - salto;
-			while (j >= 0)
-			{
-				k = j + salto;
-				if (ar[j] >= ar[k])
-					{j = -1;}			 // par de elementos ordenado
-				else
-				{
-					intercambiar(ar[j], ar[j+1]);
-					j -= salto;
-				}
-			}
-		}
-		salto = salto / 2;
-	}
-	return;
-}
 
 /*				====   	Visualizaciones		 =========
  */
 
-void visualizaPrecios(int ar[], int n) 			// Visualiza lista de precios
+void visualizaPrecios(const int ar[], int n, char orden = 'o') 			// Visualiza lista de precios
 {
-	for (int i = 0; i<n; ++i)		
+	int i;
+	int arNuevo[n];
+	for (i = 0; i<n; i++)			//Copiar Arreglo para no modificar el orden en que fue ingresado
 	{
-		if (i == 0){ cout << "[ ";}
-		cout << ar[i] << " ";
-		if (i == n-1){ cout << "]" << endl;}
+		arNuevo[i] = ar[i];
+	}
+	
+	
+	
+	switch (orden)				// Evaluar el tipo de orden para mostrar
+	{
+		case 'a':
+			ordenAlgShell(arNuevo, n, 'a');
+			cout << "\n =========== Orden ASCENDENTE ========== " << endl;
+			visualizaPrecios(arNuevo, n);
+			break;
+			
+		case 'd':
+			ordenAlgShell(arNuevo, n, 'd');
+			cout << "\n =========== Orden DESCENDENTE ========== " << endl;
+			visualizaPrecios(arNuevo, n);
+			break;
+			
+		default:			// Orden ingresado
+			for ( i = 0; i<n; ++i)		
+			{
+				if (i == 0){ cout << "[ ";}
+				cout << arNuevo[i] << " ";
+				if (i == n-1){ cout << "]" << endl;}
+			}
 	}
 }
 
-void verAscendente(int ar[], int n) 			// Visualiza lista de precios
-{
-	ordenAsc (ar, n);
-	visualizaPrecios(ar, n);
-}
 
-void verDescendente(int ar[], int n) 			// Visualiza lista de precios
+/* ESTRUCTURA DE DATOS */
+struct listaPrecios 
 {
-	ordenDesc(ar, n);
-	visualizaPrecios(ar, n);
-}
+	int n;
+	int precios[999];
+};
 
-void ingresoDatos(int nprecios = 16)
+
+listaPrecios ingresoDatos(int nprecios = 16)
 {
-	
-	int n = nprecios;
 	int i;
-	int precios[n];
-	cout << "\nCantidad de precios a ingresar [ " << n << " ]"<< endl;
+	listaPrecios datos;
+	
+	datos.n = nprecios;
+	datos.precios[nprecios] = {0};
+	//int precios[n];
+		
+	cout << "\nCantidad de precios a ingresar [ " << datos.n << " ]"<< endl;
 	
 	//~ cin>> noskipws >> aux2;
 	//~ cin.ignore(std::numeric_limits<int>::max(), '\n');
@@ -171,21 +175,29 @@ void ingresoDatos(int nprecios = 16)
 	if (confirmar("Cambiar cantidad"))
 	{
 		cout << "\nCantidad de meses a ingresar: ";
-		n = validarDatos();
-		while (n == 0)
+		datos.n = validarDatos();
+		while (datos.n == 0 || datos.n > 999)
 		{
-			cout << "Cantidad debe ser un numero entero mayor a cero\n> ";
-			n = validarDatos();
+			if (datos.n == 0)
+			{
+				cout << "Cantidad debe ser un numero entero mayor a cero\n> ";
+				datos.n = validarDatos();
+			}
+			else 
+			{
+				cout << "Cantidad debe ser un numero menor que 1000\n> ";
+				datos.n = validarDatos();
+			}			
 		}	
 		
 	}
 	
-	cout << "\nIngrese los ultimos " << n << " precios, separados por un espacio:\n [ ";
+	cout << "\nIngrese los ultimos " << datos.n << " precios, separados por un espacio:\n [ ";
 	
-	for (i = 0; i<n ; i++)
+	for (i = 0; i<datos.n ; i++)
 	{
-		precios[i] = validarDatos();
-		if (i == n-1)
+		datos.precios[i] = validarDatos();
+		if (i == datos.n-1)
 			{ 
 			cout << " ]" << endl;
 			cin.ignore(10000,'\n');
@@ -194,29 +206,100 @@ void ingresoDatos(int nprecios = 16)
 	}
 		
 	cout << "\nUsted ingresó: ";
-	visualizaPrecios(precios, n);
+	visualizaPrecios(datos.precios, datos.n);
 	
 
 	if (confirmar("Modificar"))
 	{
-		ingresoDatos(n);
+		datos = ingresoDatos(datos.n);
 	}
-	
-	else
-	{
-		cout << " =========== Orden ASCENDENTE ========== " << endl;
-		verAscendente(precios, n);
-		cout << " =========== Orden DESCENDENTE ========== " << endl;
-		verDescendente(precios, n);
-		cout << " =========== Orden Final del Arreglo ========== " << endl;
-		visualizaPrecios(precios, n);
-	}
+
+	return datos;
 }
 
+int estaOrdenada(int ar[], int n)
+{
+	int i,j;
+	for ( i = 0; i < (n-1); i++)
+	{
+		if (ar[i] > ar[i+1])
+		{ 
+			for ( j = 0; j < (n-1); j++)
+			{
+				if (ar[j] < ar[j+1]){ return -1;}			//No esta ordenada
+			}
+			return 2;		// Ordenada Descendentemente
+		}
+	}
+	return 0; 		// Ordenada Ascendentemente
+	
+}
 
+int busqBinaria(int ar[], int n, int valor,int orden = 0)
+{
+	int ptmedio, bajo, alto;
+	int valorCentral;
+	bajo = 0;
+	alto = n - 1;
+	
+	while (bajo <= alto)
+	
+	{
+		ptmedio = (bajo + alto)/2;
+		valorCentral = ar[ptmedio];
+		if (valor == valorCentral)
+			{return ptmedio;}
+			
+		else if (orden == 2)
+		{		
+			if (valor < valorCentral)
+				{bajo = ptmedio + 1;}
+			else
+				{alto = ptmedio - 1;}
+		}
+		
+		else
+		{
+			if (valor < valorCentral)
+				{alto = ptmedio - 1;}
+			else
+				{bajo = ptmedio + 1;}
+		}
+	}
+	return -1;
+}
 
+void buscarDatos(listaPrecios lista)
+{
+	int buscar, ordenada, i;
+	int copiaPrecios[lista.n];
+	for (i = 0; i<lista.n; i++)			//Copiar Arreglo para no modificar el orden en que fue ingresado
+		{copiaPrecios[i] = lista.precios[i];}
+		
+	ordenada = estaOrdenada(lista.precios, lista.n);
+	
+	if (ordenada == -1)
+	{
 
-
+		ordenAlgShell(copiaPrecios, lista.n);	  
+	}
+	 
+	cout << "Ingrese el precio a buscar: ";
+	buscar = busqBinaria (copiaPrecios, lista.n, validarDatos(), ordenada);
+	if (buscar != -1)
+	{
+		cout << "\n>  Elemento encontrado!" << endl;
+		cout << "\t Se encuentra en la posicion " << buscar+1 << " de la lista de precios." << endl;
+		if (ordenada == 2)
+			{cout << "\t (Orden Descendente)" << endl;}
+		else 
+			{cout << "\t (Orden Ascendente)" << endl;}
+	}
+	else
+	{
+		cout << "Elemento no encontrado en la lista de precios.\n";
+	}
+}
 
 
 
@@ -226,20 +309,74 @@ void ingresoDatos(int nprecios = 16)
 int main()
 {
 	
-	while (true)		// Menu del programa
-	{
-		
-		cout << " ============================================\n\t\tBIENVENIDO\n";
-		
-		ingresoDatos();
-		
+	cout << "\n======================================================================\n\t\t\tBIENVENID@\n";
+    cout << "\n __________    ________     __________       _______     ___     ___";
+	cout << "\n|          |  |		\\  |          |    /        '.  |   |   |   |";
+	cout << "\n|___    ___|  |   |¨¨¨\\  \\ '------,   /   /___/¨¨\\   |  |   |   |   |";
+	cout << "\n    |  |      |   |   /  /   ____/   /           /   /  |   |___|   |";
+	cout << "\n    |  |      |   '--/  /  ,´       /       ____/   /   |           | ";     
+	cout << "\n    |  |      |    ____/   |__     \\      ,´       /    |_______    |  ";
+	cout << "\n    |  |      |   |            \\    \\    /    ,---´             |   |";
+	cout << "\n    |  |      |   |        ____/     |  /    /_______           |   |  ";
+	cout << "\n    |  |      |   |       /         /  /            /           |   |";
+	cout << "\n    |__|      |___|      |________ /  |____________/            |___|\n\n";
 	
-		if (confirmar("Salir")) {break;}		// Salida del programa
-
+	bool salida = false;
+	while (!salida)		// Menu del programa
+	{
+		int seleccion;
+		
+		
+		
+		cout << "\n\n> Modulos del programa:" << endl;
+		cout << "\n\t1) Obj.6    (Ultimos Precios del arroz)";
+		cout << "\n\t2) Obj.7    (Buscar precio de Rosas)" << endl;
+		cout << "\n\t99) Salir del Programa" << endl;
+		cout << "\n  Seleccione una opción:  ";
+		seleccion = validarDatos();
+		
+		switch (seleccion)
+		{
+			case 1:
+				listaPrecios preciosArroz;
+				cout << "\n\n  ¨¨¨¨¨¨¨¨¨¨¨¨\tSUPERMERCADO\t¨¨¨¨¨¨¨¨¨¨¨¨" << endl;
+				preciosArroz = ingresoDatos();
+				visualizaPrecios(preciosArroz.precios, preciosArroz.n, 'd');  // Ver en orden Descendente
+				if (confirmar("\nDesea buscar la posicion de un elemento"))
+				{buscarDatos(preciosArroz);}
+				cout << "\n =========== Orden original del Arreglo ========== " << endl;
+				visualizaPrecios(preciosArroz.precios, preciosArroz.n);
+							
+				break;
+			
+			case 2:
+				{
+				listaPrecios rosas;
+				rosas.n = 16;
+				int i, preciosPredet[] = {17,19,21,22,24,26,29,31,32,33,35,36,37,39,40,45};  // Valores preestablecidos por el Trabajo Practico
+				for (i = 0; i<rosas.n; i++)
+				{ rosas.precios[i] = preciosPredet[i];}
+				
+				cout << "\n\n  **********\tFLORISTERIA\t***********" << endl;
+				if (confirmar("\nDesea consultar algun precio para la rosas"))
+				{buscarDatos(rosas);}
+				}
+				break;
+				
+			case 99:
+				if (confirmar("\nSalir")) { salida = true;}		// Salida del programa
+				break;
+			
+			
+			default:
+				cout << "\nDebe ingresar una de las opciones mostradas\n";
+		}
 		
 		
 	}
+	
 	cout << "\n\n\t\tHasta Luego...\n";
+	cout << "\n======================================================================";
 	return 0;
 }
 
