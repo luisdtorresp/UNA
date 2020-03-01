@@ -24,7 +24,13 @@
 #include <string>
 using namespace std;
 
-
+/* =================	ESTRUCTURA DE DATOS		==============================
+ */
+struct listaPrecios 
+{
+	int n;
+	int precios[999];
+};
 
 /* =================   		Funciones		   ===============================
  */
@@ -67,7 +73,7 @@ int validarDatos()
 	return n;
 };
 
-/* 				====  		Ordenamientos 		============
+/* 				====  	Ordenamientos 		=====
  * 
  * Utilizan algoritmo de Ordenamiento Shell
  */
@@ -110,7 +116,25 @@ void ordenAlgShell(int ar[], int n, char orden = 'a')
 }
 
 
-/*				====   	Visualizaciones		 =========
+int estaOrdenada(int ar[], int n)		// Funcion auxiliar para la busqueda binaria
+{
+	int i,j;
+	for ( i = 0; i < (n-1); i++)
+	{
+		if (ar[i] > ar[i+1])
+		{ 
+			for ( j = 0; j < (n-1); j++)
+			{
+				if (ar[j] < ar[j+1]){ return -1;}			//No esta ordenada
+			}
+			return 2;		// Ordenada Descendentemente
+		}
+	}
+	return 0; 		// Ordenada Ascendentemente
+	
+}
+
+/*				====   	Visualizaciones		=====
  */
 
 void visualizaPrecios(const int ar[], int n, char orden = 'o') 			// Visualiza lista de precios
@@ -118,12 +142,9 @@ void visualizaPrecios(const int ar[], int n, char orden = 'o') 			// Visualiza l
 	int i;
 	int arNuevo[n];
 	for (i = 0; i<n; i++)			//Copiar Arreglo para no modificar el orden en que fue ingresado
-	{
-		arNuevo[i] = ar[i];
-	}
+	{	arNuevo[i] = ar[i];	}
 	
-	
-	
+		
 	switch (orden)				// Evaluar el tipo de orden para mostrar
 	{
 		case 'a':
@@ -147,14 +168,6 @@ void visualizaPrecios(const int ar[], int n, char orden = 'o') 			// Visualiza l
 			}
 	}
 }
-
-
-/* ESTRUCTURA DE DATOS */
-struct listaPrecios 
-{
-	int n;
-	int precios[999];
-};
 
 
 listaPrecios ingresoDatos(int nprecios = 16)
@@ -217,24 +230,14 @@ listaPrecios ingresoDatos(int nprecios = 16)
 	return datos;
 }
 
-int estaOrdenada(int ar[], int n)
-{
-	int i,j;
-	for ( i = 0; i < (n-1); i++)
-	{
-		if (ar[i] > ar[i+1])
-		{ 
-			for ( j = 0; j < (n-1); j++)
-			{
-				if (ar[j] < ar[j+1]){ return -1;}			//No esta ordenada
-			}
-			return 2;		// Ordenada Descendentemente
-		}
-	}
-	return 0; 		// Ordenada Ascendentemente
-	
-}
 
+/*				====	Busquedas	====
+ *
+ *		Utiliza algoritmo de Busqueda Binaria, la cual requiere que la lista
+ *		este ordenada, en esta implementacion puede ser en forma ascendente
+ *		o descendente para esto utiliza el retorno de la función auxiliar estaOrdenada(),
+ *		por defecto realiza la busqueda en una lista con orden ascendente.
+ */
 int busqBinaria(int ar[], int n, int valor,int orden = 0)
 {
 	int ptmedio, bajo, alto;
@@ -304,7 +307,7 @@ void buscarDatos(listaPrecios lista)
 
 
 
-/*================ MAIN - Ejecucion del Programa ==================
+/*================ 		MAIN - Ejecucion del Programa	 ========================
  */
 int main()
 {
@@ -376,7 +379,7 @@ int main()
 	}
 	
 	cout << "\n\n\t\tHasta Luego...\n";
-	cout << "\n======================================================================";
+	cout << "\n======================================================================" << endl;
 	return 0;
 }
 
